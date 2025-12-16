@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">ShopEase</a>
+            </div>
+            <div class="nav-search">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <button id="searchBtn">🔍</button>
+            </div>
+            <div class="nav-links">
+                <a href="login.html" id="userLink">Login</a>
+                <a href="cart.html" class="cart-link">
+                    🛒 Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to ShopEase</h1>
+            <p>Your One-Stop Shopping Destination</p>
+            <a href="products.html" class="btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="category-grid">
+                <div class="category-card" data-category="electronics">
+                    <div class="category-icon">📱</div>
+                    <h3>Electronics</h3>
+                </div>
+                <div class="category-card" data-category="fashion">
+                    <div class="category-icon">👕</div>
+                    <h3>Fashion</h3>
+                </div>
+                <div class="category-card" data-category="home">
+                    <div class="category-icon">🏠</div>
+                    <h3>Home & Living</h3>
+                </div>
+                <div class="category-card" data-category="books">
+                    <div class="category-icon">📚</div>
+                    <h3>Books</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="featured-products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="products-grid" id="featuredProducts">
+               
+            </div>
+            <div class="view-all">
+                <a href="products.html" class="btn-secondary">View All Products</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About ShopEase</h3>
+                    <p>Your trusted online shopping destination with quality products and great deals.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                        <li><a href="login.html">Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p>Email: support@shopease.com</p>
+                    <p>Phone: +91 098000000000900</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ShopEase. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+       
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedProducts();
+            
+           
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    window.location.href = `products.html?category=${category}`;
+                });
+            });
+        });
+
+        function loadFeaturedProducts() {
+            const products = getProducts().slice(0, 4); // Get first 4 products
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = products.map(product => createProductCard(product)).join('');
+            attachProductCardListeners();
+        }
+    </script>
+</body>
+</html>

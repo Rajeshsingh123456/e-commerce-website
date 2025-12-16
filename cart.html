@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase - Shopping Cart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">ShopEase</a>
+            </div>
+            <div class="nav-search">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <button id="searchBtn">🔍</button>
+            </div>
+            <div class="nav-links">
+                <a href="login.html" id="userLink">Login</a>
+                <a href="cart.html" class="cart-link">
+                    🛒 Cart
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Section -->
+    <section class="cart-section">
+        <div class="container">
+            <h1>Shopping Cart</h1>
+            <div class="cart-container">
+                <div class="cart-items" id="cartItems">
+                    <!-- Cart items will be loaded here -->
+                </div>
+                <div class="cart-summary">
+                    <h2>Order Summary</h2>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">₹0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span id="shipping">₹0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (18%):</span>
+                        <span id="tax">₹0</span>
+                    </div>
+                    <hr>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span id="total">₹0</span>
+                    </div>
+                    <button class="btn-primary checkout-btn" id="checkoutBtn">
+                        Proceed to Checkout
+                    </button>
+                    <button class="btn-secondary" onclick="window.location.href='products.html'">
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About ShopEase</h3>
+                    <p>Your trusted online shopping destination with quality products and great deals.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                        <li><a href="login.html">Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p>Email: support@shopease.com</p>
+                    <p>Phone: +91 1234567890</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ShopEase. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCart();
+            
+            document.getElementById('checkoutBtn').addEventListener('click', function() {
+                const cart = getCart();
+                if (cart.length === 0) {
+                    alert('Your cart is empty!');
+                    return;
+                }
+                window.location.href = 'checkout.html';
+            });
+        });
+
+        function loadCart() {
+            const cart = getCart();
+            const cartItemsContainer = document.getElementById('cartItems');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <h2>Your cart is empty</h2>
+                        <p>Add some products to get started!</p>
+                        <a href="products.html" class="btn-primary">Shop Now</a>
+                    </div>
+                `;
+                updateCartSummary();
+                return;
+            }
+            
+            const products = getProducts();
+            const cartHTML = cart.map(item => {
+                const product = products.find(p => p.id === item.id);
+                if (!product) return '';
+                
+                return `
+                    <div class="cart-item">
+                        <img src="${product.image}" alt="${product.name}">
+                        <div class="cart-item-details">
+                            <h3>${product.name}</h3>
+                            <p class="cart-item-price">₹${product.price.toLocaleString()}</p>
+                        </div>
+                        <div class="cart-item-quantity">
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                            <span class="qty-value">${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                        </div>
+                        <div class="cart-item-total">
+                            ₹${(product.price * item.quantity).toLocaleString()}
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">🗑️</button>
+                    </div>
+                `;
+            }).join('');
+            
+            cartItemsContainer.innerHTML = cartHTML;
+            updateCartSummary();
+        }
+
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            let cart = getCart();
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadCart();
+                updateCartCount();
+            }
+        }
+
+        function updateCartSummary() {
+            const cart = getCart();
+            const products = getProducts();
+            
+            let subtotal = 0;
+            cart.forEach(item => {
+                const product = products.find(p => p.id === item.id);
+                if (product) {
+                    subtotal += product.price * item.quantity;
+                }
+            });
+            
+            const shipping = subtotal > 0 ? (subtotal > 1000 ? 0 : 50) : 0;
+            const tax = subtotal * 0.18;
+            const total = subtotal + shipping + tax;
+            
+            document.getElementById('subtotal').textContent = '₹' + subtotal.toLocaleString();
+            document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : '₹' + shipping;
+            document.getElementById('tax').textContent = '₹' + tax.toFixed(0);
+            document.getElementById('total').textContent = '₹' + total.toFixed(0);
+        }
+    </script>
+</body>
+</html>
