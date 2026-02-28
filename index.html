@@ -119,7 +119,7 @@
         });
 
         function loadFeaturedProducts() {
-            const products = getProducts().slice(0, 4); // Get first 4 products
+            const products = getProducts().slice(0, 14); // Get first 4 products
             const container = document.getElementById('featuredProducts');
             container.innerHTML = products.map(product => createProductCard(product)).join('');
             attachProductCardListeners();
