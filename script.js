@@ -761,3 +761,63 @@ document.addEventListener("DOMContentLoaded", () => {
   updateUserLink()
   initSearch()
 })
+
+// HERO IMAGE SLIDER
+
+const heroSlides = document.querySelectorAll(".slide");
+const btnNext = document.querySelector(".next");
+const btnPrev = document.querySelector(".prev");
+
+let slideIndex = 0;
+
+// show slide
+function updateSlide() {
+
+  for (let i = 0; i < heroSlides.length; i++) {
+    heroSlides[i].classList.remove("active");
+  }
+
+  heroSlides[slideIndex].classList.add("active");
+}
+
+// next button
+if (btnNext) {
+  btnNext.addEventListener("click", function () {
+
+    slideIndex = slideIndex + 1;
+
+    if (slideIndex === heroSlides.length) {
+      slideIndex = 0;
+    }
+
+    updateSlide();
+  });
+}
+
+// prev button
+if (btnPrev) {
+  btnPrev.addEventListener("click", function () {
+
+    slideIndex = slideIndex - 1;
+
+    if (slideIndex < 0) {
+      slideIndex = heroSlides.length - 1;
+    }
+
+    updateSlide();
+  });
+}
+
+// auto slide every 5 sec
+function autoSlide() {
+
+  slideIndex++;
+
+  if (slideIndex >= heroSlides.length) {
+    slideIndex = 0;
+  }
+
+  updateSlide();
+}
+
+setInterval(autoSlide, 5000);
